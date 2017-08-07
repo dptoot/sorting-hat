@@ -1,24 +1,37 @@
-.App {
-  text-align: center;
+html,
+body, 
+#root,
+#root > div, 
+.app-container {
+  height: 100%;
+  width: 100%;
+  position: relative;
 }
 
-.App-logo {
-  /*animation: App-logo-spin infinite 20s linear;*/
-  /*height: 80px;*/
+.prescreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+
+  opacity: 1;
+
+  background: url(./prescreen.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  background-size: cover;
+
+
 }
 
-.App-header {
-  /*background-color: #222;*/
-  /*height: 150px;*/
-  padding: 20px;
-  color: white;
+.prescreen.hidden {
+  transition: opacity 3s ease-in-out;
+  opacity: 0;
 }
 
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* Hide the video control bar */
+.video-react-control-bar, 
+.video-react-has-started .video-react-control-bar {
+  display: none !important;
 }
