@@ -1,2 +1,10 @@
 export {default as trait0a} from './0-a.mp3';
 export {default as trait0b} from './0-b.mp3';
+export {default as trait0c} from './0-c.mp3';
+export {default as trait0d} from './0-d.mp3';
+export {default as trait1a} from './1-a.mp3';
+export {default as trait1b} from './1-b.mp3';
+export {default as trait1c} from './1-c.mp3';
+export {default as trait2} from './2.mp3';
+export {default as trait3} from './3.mp3';
+export {default as trait4} from './4.mp3';

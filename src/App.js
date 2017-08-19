@@ -23,19 +23,26 @@ class App extends Component {
             scriptPlaying: false,
             script: script,
             scriptIndex: 0,
-            // audioClip: paths.houses.gryffindor,
+            houses: {
+                gryffindor: 0,
+                slytherin: 0,
+                ravenclaw: 0,
+                hufflepuff: 0,
+            }
         }
 
         this.handlePrescreenClick = this.handlePrescreenClick.bind(this);
     }
 
     handlePrescreenClick() {
-        this.setState({
-            showPrescreen: false,
-            scriptPlaying: true,
-        }, () => {
-            this.handleAudioClipStart(this.state.script[0]);
-        });
+        if (!this.state.scriptPlaying) {
+            this.setState({
+                showPrescreen: false,
+                scriptPlaying: true,
+            }, () => {
+                this.handleAudioClipStart(this.state.script[0]);
+            });
+        }
     }
 
     handleAudioClipStart(src) {
@@ -48,9 +55,7 @@ class App extends Component {
 
     handleAudioClipEnd() {
         if (this.state.script.length - 1 === this.state.scriptIndex) {
-            this.setState({
-                showPrescreen: true,
-            })
+            this.handleEndScript();
         } else {
             this.handleNextScene(this.state.scriptIndex + 1);
         }
@@ -61,6 +66,14 @@ class App extends Component {
             scriptIndex: scriptIndex,
         }, () => {
             this.handleAudioClipStart(this.state.script[scriptIndex]);
+        });
+    }
+
+    handleEndScript() {
+        this.setState({
+            showPrescreen: true,
+            scriptPlaying: false,
+            scriptIndex: 0,
         });
     }
 
@@ -80,6 +93,7 @@ class App extends Component {
   render() {
     return (
         <div className="app-container">
+            <div className="hat" />
             {this.renderPrescreen()}
         </div>
     );
