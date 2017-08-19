@@ -2,26 +2,37 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import './App.css';
 
-import * as gryffindor from './audio/houses/gryffindor';
+import houses from './audio/houses';
 import * as stalling from './audio/stalling';
 import * as traits from './audio/traits';
+import * as intros from './audio/intros';
+import * as success from './audio/success';
+console.log("houses", houses);
 
-const script = [
-    stalling.stalling1,
-    traits.trait0a,
-    gryffindor.trait0,
-    traits.trait0b,
-    gryffindor.house,
-];
+const houseLimit = 4;
+const introCount = 6;
+const stallingCount = 5;
+const successCount = 5;
+const traitCounts = {
+    gryffindor: 4,
+    slytherin: 6,
+    ravenclaw: 6,
+    hufflepuff: 6,
+}
+
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 class App extends Component {
 
-    constructor() {
+    constructor() { 
         super();
         this.state = {
             showPrescreen: true,
             scriptPlaying: false,
-            script: script,
+            script: null,
             scriptIndex: 0,
             houses: {
                 gryffindor: 0,
@@ -34,12 +45,45 @@ class App extends Component {
         this.handlePrescreenClick = this.handlePrescreenClick.bind(this);
     }
 
+    getHouse() {
+        const houses = Object.keys(this.state.houses);
+        const house = houses[getRandomInt(1, houses.length)];
+
+        if (this.state.houses[house] < houseLimit) {
+            return house;
+        } else {
+            return this.getHouse();
+        }
+    }
+
+    getScript(house) {
+        return [
+            intros[`intro${getRandomInt(0, introCount)}`],
+            stalling[`stalling${getRandomInt(0, stallingCount)}`],
+            // traits.trait0a,
+            // houses.trait3,
+            // traits.trait0b,
+            success[`success${getRandomInt(0, successCount)}`],
+            houses[house].name,
+        ];
+    }
+
     handlePrescreenClick() {
         if (!this.state.scriptPlaying) {
+            // Select a house
+            const house = this.getHouse();
+
+
             this.setState({
+                ...this.state,
                 showPrescreen: false,
                 scriptPlaying: true,
-            }, () => {
+                script: this.getScript(house),
+                houses: {
+                    ...this.state.houses,
+                    [house]: this.state.houses[house] + 1,
+                }
+        }, () => {
                 this.handleAudioClipStart(this.state.script[0]);
             });
         }
@@ -91,6 +135,7 @@ class App extends Component {
     }
 
   render() {
+    console.log(this.state);
     return (
         <div className="app-container">
             <div className="hat" />
