@@ -13,7 +13,8 @@ const houseLimit = 4;
 const introCount = 6;
 const stallingCount = 5;
 const successCount = 5;
-const traitCounts = {
+const traitCount = 4;
+const houseTraitCounts = {
     gryffindor: 4,
     slytherin: 6,
     ravenclaw: 6,
@@ -56,13 +57,49 @@ class App extends Component {
         }
     }
 
+    getRandomHouseTrait(house) {
+        return houses[house][`trait${getRandomInt(0, houseTraitCounts[house])}`]
+    }
+
+    getTraits(house) {
+        let wizardTraits;
+        const randomInt = getRandomInt(0, traitCount);
+        switch (randomInt) {
+            case 0:
+                wizardTraits = [
+                    traits.trait0a,
+                    this.getRandomHouseTrait(house),
+                    traits.trait0b,
+                    traits.trait0c,
+                    this.getRandomHouseTrait(house),
+                    traits.trait0d,
+                ]
+                break;
+            case 1:
+                const houseTrait = this.getRandomHouseTrait(house)
+                wizardTraits = [
+                    traits.trait1a,
+                    houseTrait,
+                    traits.trait1b,
+                    houseTrait,
+                    traits.trait1c,
+                ]
+                break;
+            default: 
+                wizardTraits = [
+                    traits[`trait${randomInt}`],
+                    this.getRandomHouseTrait(house),
+                ]
+        }
+
+        return wizardTraits;
+    }
+
     getScript(house) {
         return [
             intros[`intro${getRandomInt(0, introCount)}`],
             stalling[`stalling${getRandomInt(0, stallingCount)}`],
-            // traits.trait0a,
-            // houses.trait3,
-            // traits.trait0b,
+            ...this.getTraits(house),
             success[`success${getRandomInt(0, successCount)}`],
             houses[house].name,
         ];
