@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
-import Sound from 'react-sound';
 import './App.css';
 
-const paths = {
-    houses: {
-        gryffindor: 'audio/houses/gryffindor/gryffindor.mp3'
-    }
-}
+import * as gryffindor from './audio/houses/gryffindor';
+import * as stalling from './audio/stalling';
+import * as traits from './audio/traits';
 
-
+const script = [
+    stalling.stalling1,
+    traits.trait0a,
+    gryffindor.trait0,
+    traits.trait0b,
+    gryffindor.house,
+];
 
 class App extends Component {
 
@@ -17,41 +20,48 @@ class App extends Component {
         super();
         this.state = {
             showPrescreen: true,
-            script: [],
+            scriptPlaying: false,
+            script: script,
             scriptIndex: 0,
-            audioClip: paths.houses.gryffindor,
+            // audioClip: paths.houses.gryffindor,
         }
 
         this.handlePrescreenClick = this.handlePrescreenClick.bind(this);
     }
 
-
-    componentDidMount() {
-        
-    }
-
     handlePrescreenClick() {
-        this.handleScriptChange(0, true)
-    }
-
-    handleScriptChange(scriptIndex, shouldPlay) {
         this.setState({
             showPrescreen: false,
-            scriptIndex: scriptIndex,
+            scriptPlaying: true,
         }, () => {
-            
+            this.handleAudioClipStart(this.state.script[0]);
         });
     }
 
-    renderSound() {
-        const props = {
-            url: this.state.audioClip,
-            autoLoad: true,
+    handleAudioClipStart(src) {
+        this.sound = new Audio(src);
+        this.sound.onended = () => {
+            this.handleAudioClipEnd();
         }
+        this.sound.play();
+    }
 
-        return this.state.audioClip && (
-            <Sound {...props} />
-        );
+    handleAudioClipEnd() {
+        if (this.state.script.length - 1 === this.state.scriptIndex) {
+            this.setState({
+                showPrescreen: true,
+            })
+        } else {
+            this.handleNextScene(this.state.scriptIndex + 1);
+        }
+    }
+
+    handleNextScene(scriptIndex) {
+        this.setState({
+            scriptIndex: scriptIndex,
+        }, () => {
+            this.handleAudioClipStart(this.state.script[scriptIndex]);
+        });
     }
 
     renderPrescreen() {
@@ -71,7 +81,6 @@ class App extends Component {
     return (
         <div className="app-container">
             {this.renderPrescreen()}
-            {this.renderSound()}
         </div>
     );
   }
