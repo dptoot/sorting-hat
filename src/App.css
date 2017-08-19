@@ -26,12 +26,12 @@ body,
 }
 
 .prescreen.hidden {
-  transition: opacity 3s ease-in-out;
+  /*transition: opacity 3s ease-in-out;*/
   opacity: 0;
 }
 
 /* Hide the video control bar */
 .video-react-control-bar, 
 .video-react-has-started .video-react-control-bar {
-  display: none !important;
+  /*display: none !important;*/
 }

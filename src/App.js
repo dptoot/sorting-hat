@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import { Player, ControlBar } from 'video-react';
-import video from './video.mp4';
 import classnames from 'classnames';
-import "video-react/dist/video-react.css";
+import Sound from 'react-sound';
 import './App.css';
+
+const paths = {
+    houses: {
+        gryffindor: 'audio/houses/gryffindor/gryffindor.mp3'
+    }
+}
 
 
 
@@ -13,29 +17,40 @@ class App extends Component {
         super();
         this.state = {
             showPrescreen: true,
+            script: [],
+            scriptIndex: 0,
+            audioClip: paths.houses.gryffindor,
         }
 
         this.handlePrescreenClick = this.handlePrescreenClick.bind(this);
     }
 
+
+    componentDidMount() {
+        
+    }
+
     handlePrescreenClick() {
+        this.handleScriptChange(0, true)
+    }
+
+    handleScriptChange(scriptIndex, shouldPlay) {
         this.setState({
             showPrescreen: false,
+            scriptIndex: scriptIndex,
         }, () => {
-            this.refs.player.play();
+            
         });
     }
 
-    renderVideo() {
-        return (
-            <Player
-                ref="player"
-                preload="auto"
-                playsInline
-                src={video}
-            >
-                <ControlBar autoHide/>
-            </Player>
+    renderSound() {
+        const props = {
+            url: this.state.audioClip,
+            autoLoad: true,
+        }
+
+        return this.state.audioClip && (
+            <Sound {...props} />
         );
     }
 
@@ -55,8 +70,8 @@ class App extends Component {
   render() {
     return (
         <div className="app-container">
-            {this.renderVideo()}
             {this.renderPrescreen()}
+            {this.renderSound()}
         </div>
     );
   }
