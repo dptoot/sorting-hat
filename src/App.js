@@ -57,6 +57,10 @@ class App extends Component {
         this.handleSceneStart = this.handleSceneStart.bind(this);
     }
 
+    shouldSelectHouse() {
+        return Object.values(houseCounts).reduce((a, b) => a + b, 0) !== 16
+    }
+
     getSelectedHouseName() {
         const houseNames = Object.keys(houses);
         const selectedHouse = houseNames[getRandomInt(0, houseNames.length)];
@@ -121,7 +125,7 @@ class App extends Component {
     }
 
     handleSceneStart() {
-        if (!this.state.scriptPlaying) {
+        if (!this.state.scriptPlaying && this.shouldSelectHouse()) {
             // Select a house
             const selectedHouse = this.getSelectedHouseName();
 
@@ -167,15 +171,10 @@ class App extends Component {
         let interval = 200; // 200ms interval
         if (this.theme.volume == 1) {
             var intervalID = setInterval(() => {
-            // Reduce volume by 0.05 as long as it is above 0
-            // This works as long as you start with a multiple of 0.05!
             if (vol > 0) {
                 vol -= 0.05;
-                // limit to 2 decimal places
-                    // also converts to string, works ok
-                    this.theme.volume = vol.toFixed(2);
+                this.theme.volume = vol.toFixed(2);
             } else {
-                // Stop the setInterval when 0 is reached
                 clearInterval(intervalID);
                 this.theme.pause();
                 this.theme.currentTime = 0;
