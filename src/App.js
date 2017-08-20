@@ -7,18 +7,28 @@ import * as stalling from './audio/stalling';
 import * as traits from './audio/traits';
 import * as intros from './audio/intros';
 import * as success from './audio/success';
-console.log("houses", houses);
+import theme from './audio/theme.mp3';
 
-const houseLimit = 4;
-const introCount = 6;
-const stallingCount = 5;
-const successCount = 5;
-const traitCount = 4;
-const houseTraitCounts = {
-    gryffindor: 4,
-    slytherin: 6,
-    ravenclaw: 6,
-    hufflepuff: 6,
+const selectionLimit = 4;
+
+const clipCounts = {
+    intros: 6,
+    stalling: 5,
+    success: 5,
+    traits: 4,
+    houses: {
+        gryffindor: 4,
+        slytherin: 6,
+        ravenclaw: 6,
+        hufflepuff: 6,
+    }
+}
+
+const houseCounts = {
+    gryffindor: 0,
+    slytherin: 0,
+    ravenclaw: 0,
+    hufflepuff: 0,
 }
 
 
@@ -35,48 +45,49 @@ class App extends Component {
             scriptPlaying: false,
             script: null,
             scriptIndex: 0,
-            houses: {
-                gryffindor: 0,
-                slytherin: 0,
-                ravenclaw: 0,
-                hufflepuff: 0,
-            }
+        };
+
+        this.sound = new Audio(null);
+        this.theme = new Audio(theme);
+
+        this.sound.onended = () => {
+            this.handleAudioClipEnd();
         }
 
-        this.handlePrescreenClick = this.handlePrescreenClick.bind(this);
+        this.handleSceneStart = this.handleSceneStart.bind(this);
     }
 
-    getHouse() {
-        const houses = Object.keys(this.state.houses);
-        const house = houses[getRandomInt(1, houses.length)];
+    getSelectedHouseName() {
+        const houseNames = Object.keys(houses);
+        const selectedHouse = houseNames[getRandomInt(0, houseNames.length)];
 
-        if (this.state.houses[house] < houseLimit) {
-            return house;
+        if (houseCounts[selectedHouse] < selectionLimit) {
+            return selectedHouse;
         } else {
-            return this.getHouse();
+            return this.getSelectedHouseName();
         }
     }
 
-    getRandomHouseTrait(house) {
-        return houses[house][`trait${getRandomInt(0, houseTraitCounts[house])}`]
+    getRandomHouseTrait(houseName) {
+        return houses[houseName][`trait${getRandomInt(0, clipCounts.houses[houseName])}`]
     }
 
-    getTraits(house) {
+    getTraits(houseName) {
         let wizardTraits;
-        const randomInt = getRandomInt(0, traitCount);
+        const randomInt = getRandomInt(0, clipCounts.traits);
         switch (randomInt) {
             case 0:
                 wizardTraits = [
                     traits.trait0a,
-                    this.getRandomHouseTrait(house),
+                    this.getRandomHouseTrait(houseName),
                     traits.trait0b,
                     traits.trait0c,
-                    this.getRandomHouseTrait(house),
+                    this.getRandomHouseTrait(houseName),
                     traits.trait0d,
                 ]
                 break;
             case 1:
-                const houseTrait = this.getRandomHouseTrait(house)
+                const houseTrait = this.getRandomHouseTrait(houseName)
                 wizardTraits = [
                     traits.trait1a,
                     houseTrait,
@@ -88,57 +99,89 @@ class App extends Component {
             default: 
                 wizardTraits = [
                     traits[`trait${randomInt}`],
-                    this.getRandomHouseTrait(house),
+                    this.getRandomHouseTrait(houseName),
                 ]
         }
 
         return wizardTraits;
     }
 
-    getScript(house) {
+    getRandomClip(type) {
+        return `${type}${getRandomInt(0, clipCounts[type])}`;
+    }
+
+    getScript(houseName) {
         return [
-            intros[`intro${getRandomInt(0, introCount)}`],
-            stalling[`stalling${getRandomInt(0, stallingCount)}`],
-            ...this.getTraits(house),
-            success[`success${getRandomInt(0, successCount)}`],
-            houses[house].name,
+            intros[this.getRandomClip('intros')],
+            stalling[this.getRandomClip('stalling')],
+            ...this.getTraits(houseName),
+            success[this.getRandomClip('success')],
+            houses[houseName].name,
         ];
     }
 
-    handlePrescreenClick() {
+    handleSceneStart() {
         if (!this.state.scriptPlaying) {
             // Select a house
-            const house = this.getHouse();
+            const selectedHouse = this.getSelectedHouseName();
 
+            // Increase house count
+            houseCounts[selectedHouse] += 1
 
             this.setState({
                 ...this.state,
                 showPrescreen: false,
                 scriptPlaying: true,
-                script: this.getScript(house),
-                houses: {
-                    ...this.state.houses,
-                    [house]: this.state.houses[house] + 1,
-                }
+                script: this.getScript(selectedHouse),
         }, () => {
+                this.theme.play();
                 this.handleAudioClipStart(this.state.script[0]);
             });
         }
     }
 
+    handleSceneEnd() {
+        this.handleThemeFadeOut();
+        this.setState({
+            showPrescreen: true,
+            scriptPlaying: false,
+            scriptIndex: 0,
+        });
+    }
+
     handleAudioClipStart(src) {
-        this.sound = new Audio(src);
-        this.sound.onended = () => {
-            this.handleAudioClipEnd();
-        }
+        this.sound.src = src;
         this.sound.play();
     }
 
     handleAudioClipEnd() {
         if (this.state.script.length - 1 === this.state.scriptIndex) {
-            this.handleEndScript();
+            this.handleSceneEnd();
         } else {
             this.handleNextScene(this.state.scriptIndex + 1);
+        }
+    }
+
+    handleThemeFadeOut() {
+        let vol = 1;
+        let interval = 200; // 200ms interval
+        if (this.theme.volume == 1) {
+            var intervalID = setInterval(() => {
+            // Reduce volume by 0.05 as long as it is above 0
+            // This works as long as you start with a multiple of 0.05!
+            if (vol > 0) {
+                vol -= 0.05;
+                // limit to 2 decimal places
+                    // also converts to string, works ok
+                    this.theme.volume = vol.toFixed(2);
+            } else {
+                // Stop the setInterval when 0 is reached
+                clearInterval(intervalID);
+                this.theme.pause();
+                this.theme.currentTime = 0;
+                this.theme.volume = 1;
+            }
+            }, interval);
         }
     }
 
@@ -150,14 +193,6 @@ class App extends Component {
         });
     }
 
-    handleEndScript() {
-        this.setState({
-            showPrescreen: true,
-            scriptPlaying: false,
-            scriptIndex: 0,
-        });
-    }
-
     renderPrescreen() {
         const componentClasses = classnames({
             prescreen: true, 
@@ -166,13 +201,14 @@ class App extends Component {
 
         return (
             <div className={componentClasses}
-                onClick={this.handlePrescreenClick}
+                onClick={this.handleSceneStart}
             />
         );
     }
 
   render() {
-    console.log(this.state);
+    console.log('state: ', this.state);
+    console.log('house counts: ', houseCounts);
     return (
         <div className="app-container">
             <div className="hat" />

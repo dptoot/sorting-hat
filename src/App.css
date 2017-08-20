@@ -25,11 +25,11 @@ body,
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-  transition: opacity 1.5s ease-in-out;
+  transition: opacity 2s ease-in-out;
 }
 
 .prescreen.hidden {
-  transition: opacity 1.5s ease-in-out;
+  transition: opacity 2s ease-in-out;
   opacity: 0;
 }
 
