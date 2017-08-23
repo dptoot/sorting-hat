@@ -29,8 +29,7 @@ const houseCounts = {
     slytherin: 0,
     ravenclaw: 0,
     hufflepuff: 0,
-}
-
+};
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -47,6 +46,7 @@ class App extends Component {
             scriptIndex: 0,
         };
 
+        this.selectionRound = 0;
         this.sound = new Audio(null);
         this.theme = new Audio(theme);
 
@@ -57,15 +57,25 @@ class App extends Component {
         this.handleSceneStart = this.handleSceneStart.bind(this);
     }
 
+    getTotalSelected() {
+        return Object.values(houseCounts).reduce((a, b) => a + b, 0);
+    }
+
     shouldSelectHouse() {
-        return Object.values(houseCounts).reduce((a, b) => a + b, 0) !== 16
+        return this.getTotalSelected() !== 16
+    }
+
+    shouldStartNewSelectionRound() {
+        return this.getTotalSelected() % selectionLimit === 0;
     }
 
     getSelectedHouseName() {
         const houseNames = Object.keys(houses);
         const selectedHouse = houseNames[getRandomInt(0, houseNames.length)];
+        const selectedHouseCount = houseCounts[selectedHouse] ;
 
-        if (houseCounts[selectedHouse] < selectionLimit) {
+        // Only use house if they haven't reached the limit or been picked this round
+        if (selectedHouseCount < selectionLimit && selectedHouseCount !== this.selectionRound) {
             return selectedHouse;
         } else {
             return this.getSelectedHouseName();
@@ -125,6 +135,10 @@ class App extends Component {
     }
 
     handleSceneStart() {
+        if (this.shouldStartNewSelectionRound()) {
+            this.selectionRound += 1;
+        }
+
         if (!this.state.scriptPlaying && this.shouldSelectHouse()) {
             // Select a house
             const selectedHouse = this.getSelectedHouseName();
