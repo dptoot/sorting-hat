@@ -94,10 +94,10 @@ class App extends Component {
                 wizardTraits = [
                     traits.trait0a,
                     this.getRandomHouseTrait(houseName),
-                    traits.trait0b,
-                    traits.trait0c,
-                    this.getRandomHouseTrait(houseName),
-                    traits.trait0d,
+                    // traits.trait0b,
+                    // traits.trait0c,
+                    // this.getRandomHouseTrait(houseName),
+                    // traits.trait0d,
                 ]
                 break;
             case 1:
