@@ -107,10 +107,10 @@ class App extends Component {
                 wizardTraits = [
                     traits.trait0a,
                     this.getRandomHouseTrait(houseName),
-                    traits.trait0b,
-                    traits.trait0c,
-                    this.getRandomHouseTrait(houseName),
-                    traits.trait0d,
+                    // traits.trait0b,
+                    // traits.trait0c,
+                    // this.getRandomHouseTrait(houseName),
+                    // traits.trait0d,
                 ]
                 break;
             case 1:
@@ -139,10 +139,10 @@ class App extends Component {
 
     getScript(houseName) {
         return [
-            // intros[this.getRandomClip('intros')],
-            // stalling[this.getRandomClip('stalling')],
-            // ...this.getTraits(houseName),
-            // success[this.getRandomClip('success')],
+            intros[this.getRandomClip('intros')],
+            stalling[this.getRandomClip('stalling')],
+            ...this.getTraits(houseName),
+            success[this.getRandomClip('success')],
             houses[houseName].name,
         ];
     }
