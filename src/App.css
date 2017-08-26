@@ -9,7 +9,7 @@ body,
 }
 
 .prescreen,
-.hat {
+.scene {
   position: absolute;
   top: 0;
   left: 0;
@@ -33,9 +33,34 @@ body,
   opacity: 0;
 }
 
-.hat {
-  background: url(./hat.jpg) no-repeat center center fixed; 
-  -webkit-background-size: cover;
+.scene {
+
+}
+
+.scene.bg-1 {
+  background: url(./bg-1.jpg) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.scene.bg-2 {
+  background: url(./bg-2.jpg) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.scene.bg-3 {
+  background: url(./bg-3.jpg) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.scene.bg-4 {
+  background: url(./bg-4.jpg) no-repeat center center fixed; 
+    -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;

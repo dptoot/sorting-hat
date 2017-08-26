@@ -46,6 +46,7 @@ class App extends Component {
             scriptPlaying: false,
             script: null,
             scriptIndex: 0,
+            sceneImageIndex: 1,
         };
 
         this.selectionRound = 0;
@@ -158,6 +159,7 @@ class App extends Component {
 
             this.setState({
                 ...this.state,
+                sceneImageIndex: getRandomInt(1,4),
                 showPrescreen: false,
                 scriptPlaying: true,
                 script: this.getScript(selectedHouse),
@@ -212,9 +214,10 @@ class App extends Component {
   render() {
     console.log('state: ', this.state);
     console.log('house counts: ', houseCounts);
+    const className = `scene bg-${this.state.sceneImageIndex}`
     return (
         <div className="app-container">
-            <div className="hat" />
+            <div className={className} />
             {this.renderPrescreen()}
         </div>
     );
