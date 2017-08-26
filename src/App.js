@@ -9,7 +9,12 @@ import * as intros from './audio/intros';
 import * as success from './audio/success';
 import theme from './audio/theme.mp3';
 
-const selectionLimit = 4;
+const houseLimits = {
+    gryffindor: 4,
+    slytherin: 3,
+    ravenclaw: 4,
+    hufflepuff: 4,
+};
 
 const clipCounts = {
     intros: 6,
@@ -37,6 +42,10 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function getTotalCount(obj) {
+    return Object.values(obj).reduce((a, b) => a + b, 0);
+}
+
 class App extends Component {
 
     constructor() { 
@@ -49,7 +58,9 @@ class App extends Component {
             sceneImageIndex: 1,
         };
 
+        this.selectionLimit = getTotalCount(houseLimits);
         this.selectionRound = 0;
+
         this.sound = new Audio(null);
         this.theme = new Audio(theme);
         this.theme.loop = true;
@@ -62,25 +73,22 @@ class App extends Component {
         this.handleSceneStart = this.handleSceneStart.bind(this);
     }
 
-    getTotalSelected() {
-        return Object.values(houseCounts).reduce((a, b) => a + b, 0);
-    }
-
     shouldSelectHouse() {
-        return this.getTotalSelected() !== 16
+        return getTotalCount(houseCounts) !== this.selectionLimit
     }
 
     shouldStartNewSelectionRound() {
-        return this.getTotalSelected() % selectionLimit === 0;
+        return getTotalCount(houseCounts) % 4 === 0;
     }
 
     getSelectedHouseName() {
         const houseNames = Object.keys(houses);
         const selectedHouse = houseNames[getRandomInt(0, houseNames.length)];
         const selectedHouseCount = houseCounts[selectedHouse] ;
+        const selectedHouseLimit = houseLimits[selectedHouse];
 
         // Only use house if they haven't reached the limit or been picked this round
-        if (selectedHouseCount < selectionLimit && selectedHouseCount !== this.selectionRound) {
+        if (selectedHouseCount < selectedHouseLimit && selectedHouseCount !== this.selectionRound) {
             return selectedHouse;
         } else {
             return this.getSelectedHouseName();
@@ -99,10 +107,10 @@ class App extends Component {
                 wizardTraits = [
                     traits.trait0a,
                     this.getRandomHouseTrait(houseName),
-                    // traits.trait0b,
-                    // traits.trait0c,
-                    // this.getRandomHouseTrait(houseName),
-                    // traits.trait0d,
+                    traits.trait0b,
+                    traits.trait0c,
+                    this.getRandomHouseTrait(houseName),
+                    traits.trait0d,
                 ]
                 break;
             case 1:
@@ -131,10 +139,10 @@ class App extends Component {
 
     getScript(houseName) {
         return [
-            intros[this.getRandomClip('intros')],
-            stalling[this.getRandomClip('stalling')],
-            ...this.getTraits(houseName),
-            success[this.getRandomClip('success')],
+            // intros[this.getRandomClip('intros')],
+            // stalling[this.getRandomClip('stalling')],
+            // ...this.getTraits(houseName),
+            // success[this.getRandomClip('success')],
             houses[houseName].name,
         ];
     }
