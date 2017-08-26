@@ -31,6 +31,8 @@ const houseCounts = {
     hufflepuff: 0,
 };
 
+let isPreselected = true;
+
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -49,6 +51,8 @@ class App extends Component {
         this.selectionRound = 0;
         this.sound = new Audio(null);
         this.theme = new Audio(theme);
+        this.theme.loop = true;
+        this.theme.play();
 
         this.sound.onended = () => {
             this.handleAudioClipEnd();
@@ -141,7 +145,13 @@ class App extends Component {
 
         if (!this.state.scriptPlaying && this.shouldSelectHouse()) {
             // Select a house
-            const selectedHouse = this.getSelectedHouseName();
+            let selectedHouse = this.getSelectedHouseName();
+
+            // Handle birthday girl
+            if (isPreselected) {
+                selectedHouse = 'gryffindor';
+                isPreselected = false;
+            }
 
             // Increase house count
             houseCounts[selectedHouse] += 1
@@ -152,14 +162,12 @@ class App extends Component {
                 scriptPlaying: true,
                 script: this.getScript(selectedHouse),
         }, () => {
-                this.theme.play();
                 this.handleAudioClipStart(this.state.script[0]);
             });
         }
     }
 
     handleSceneEnd() {
-        this.handleThemeFadeOut();
         this.setState({
             showPrescreen: true,
             scriptPlaying: false,
@@ -177,24 +185,6 @@ class App extends Component {
             this.handleSceneEnd();
         } else {
             this.handleNextScene(this.state.scriptIndex + 1);
-        }
-    }
-
-    handleThemeFadeOut() {
-        let vol = 1;
-        let interval = 200; // 200ms interval
-        if (this.theme.volume == 1) {
-            var intervalID = setInterval(() => {
-            if (vol > 0) {
-                vol -= 0.05;
-                this.theme.volume = vol.toFixed(2);
-            } else {
-                clearInterval(intervalID);
-                this.theme.pause();
-                this.theme.currentTime = 0;
-                this.theme.volume = 1;
-            }
-            }, interval);
         }
     }
 
